@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+@theme {
+  /* ------------------------------------------------------------------ */
+  /* Paper & ink — the aged-catalog canvas                              */
+  /* ------------------------------------------------------------------ */
+  --color-bg:          #EFE6D2;   /* aged paper */
+  --color-bg-soft:     #E4D8B9;   /* deeper paper */
+  --color-surface:     #FBF4DD;   /* cream card */
+  --color-surface-2:   #F1E8CC;
+  --color-card:        #FCF6E2;   /* lightest card */
+  --color-line:        #BDA978;   /* hairline */
+  --color-line-soft:   #DCC994;
+
+  --color-ink:         #1A100C;   /* espresso */
+  --color-ink-soft:    #4A3A2D;
+  --color-ink-mute:    #8C775B;
+
+  /* ------------------------------------------------------------------ */
+  /* Oxblood — primary accent (sunburst body, "Gira" italic, focus)     */
+  /* ------------------------------------------------------------------ */
+  --color-ox-50:   #F7DCE0;
+  --color-ox-200:  #D38690;
+  --color-ox-400:  #993542;
+  --color-ox-500:  #7A1F2B;
+  --color-ox-600:  #5C1620;
+  --color-ox-700:  #3E0E16;
+
+  /* ------------------------------------------------------------------ */
+  /* Goldleaf — prices, marquee accents                                 */
+  /* ------------------------------------------------------------------ */
+  --color-gold-100: #F4E0A4;
+  --color-gold-300: #DDB04F;
+  --color-gold-500: #B07A11;
+  --color-gold-700: #7A5208;
+
+  /* Sources (kept thematically — Blocket forest, Tradera coral) */
+  --color-string-500: #2D5F4A;
+  --color-string-700: #1B3F2F;
+  --color-coral-500:  #B84B33;
+  --color-coral-600:  #8E3722;
+
+  /* ------------------------------------------------------------------ */
+  /* Typography                                                          */
+  /* ------------------------------------------------------------------ */
+  --font-sans:
+    var(--font-sans-loaded), "Familjen Grotesk", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display:
+    var(--font-display-loaded), "Newsreader", "Iowan Old Style",
+    "Apple Garamond", Georgia, ui-serif, serif;
+  --font-mono:
+    var(--font-mono-loaded), "IBM Plex Mono", ui-monospace, "SF Mono",
+    "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+html, body { height: 100%; }
+
+body {
+  background-color: var(--color-bg);
+  background-image:
+    /* soft radial vignette of warm sun */
+    radial-gradient(1200px 700px at 12% -10%, rgba(176,122,17,0.10), transparent 60%),
+    radial-gradient(900px 600px at 110% 0%, rgba(122,31,43,0.06), transparent 55%),
+    /* paper grain (SVG turbulence) */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.08 0 0 0 0 0.04 0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>");
+  background-repeat: no-repeat, no-repeat, repeat;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: var(--color-gold-100); color: var(--color-ox-700); }
+
+/* ------------------------------------------------------------------ */
+/* Hairline rule — like a printer's kerf                              */
+/* ------------------------------------------------------------------ */
+.rule {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--color-line), transparent);
+}
+.rule-solid {
+  height: 1px;
+  background: var(--color-line);
+}
+.rule-thick {
+  height: 2px;
+  background: var(--color-ink);
+}
+
+/* ------------------------------------------------------------------ */
+/* Editorial helpers                                                  */
+/* ------------------------------------------------------------------ */
+.font-display { font-family: var(--font-display); }
+.font-mono    { font-family: var(--font-mono); }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-mute);
+}
+
+.specs {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum", "cv01";
+}
+
+.paper-card {
+  background:
+    linear-gradient(180deg, var(--color-card) 0%, var(--color-surface) 100%);
+  border: 1px solid var(--color-line);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 230, 0.65),
+    0 1px 0 rgba(26, 16, 12, 0.04),
+    0 12px 28px -22px rgba(26, 16, 12, 0.30);
+}
+
+.paper-card-flat {
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+}
+
+/* Stamp / receipt-style label */
+.stamp {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 3px 6px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
+}
+
+/* Soft underline that mimics a vibrating string */
+.string-underline {
+  background-image: linear-gradient(to right,
+    var(--color-gold-500), var(--color-gold-500));
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  padding-bottom: 1px;
+}
+
+.line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+/* Marquee — subtle horizontal scroll of decorative text in colophons */
+@keyframes drift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.drift { animation: drift 40s linear infinite; }
+
+/* Soft glow on focus */
+*:focus-visible {
+  outline: 2px solid var(--color-ox-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

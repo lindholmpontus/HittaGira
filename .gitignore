@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+
+# Next.js build output
+.next
+out
+
+# Local env (real secrets — never commit)
+.env*.local
+
+# TypeScript incremental cache
+*.tsbuildinfo
+next-env.d.ts
+
+# Local SQLite database + journals
+data/*.db
+data/*.db-journal
+data/*.db-shm
+data/*.db-wal
+
+# OS / editors
+.DS_Store
+Thumbs.db
+
+# Claude Code per-machine state (skills/agents stay under version control)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+skills-lock.json
