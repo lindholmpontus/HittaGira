@@ -8,7 +8,12 @@ import { MobileFilters } from "@/components/MobileFilters";
 import { AdCardMobile } from "@/components/AdCardMobile";
 import { SOURCES, SOURCE_IDS, type SourceId } from "@/lib/sources";
 
-export const dynamic = "force-dynamic";
+// searchParams already force this page to render per-request; revalidate
+// applies if the user lands without any filters. We deliberately skip
+// generateStaticParams here — pre-rendering 60 model pages at build time
+// was triggering SQLite worker contention on Windows. The first request to
+// each model warms the cache; subsequent requests are instant.
+export const revalidate = 60;
 
 type SortKey = "newest" | "oldest" | "cheapest" | "expensive";
 

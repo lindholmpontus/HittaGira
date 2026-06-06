@@ -6,7 +6,10 @@ import { AdCardMobile } from "@/components/AdCardMobile";
 import { AnimatedGrid, AnimatedItem } from "@/components/AnimatedGrid";
 import { SOURCE_IDS } from "@/lib/sources";
 
-export const dynamic = "force-dynamic";
+// Re-render at most once a minute. The DB queries below run only on the
+// revalidation tick rather than on every request — drops per-request work
+// from ~5 SQL round-trips to a static HTML hit.
+export const revalidate = 60;
 
 const DAY_MS = 24 * 3600 * 1000;
 

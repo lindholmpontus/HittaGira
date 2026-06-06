@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "motion/react";
 import { AdPriceTag } from "./AdPriceTag";
 import { WatchlistButton } from "./WatchlistButton";
 import { formatRelative } from "@/lib/format";
@@ -34,11 +31,7 @@ export function AdCardMobile({ ad }: { ad: Ad }) {
   const catalogNo = ad.id.toString().padStart(4, "0").slice(-4);
 
   return (
-    <motion.div
-      whileTap={{ scale: 0.985 }}
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-      className="paper-card group relative block h-full overflow-hidden rounded-md transition hover:border-[var(--color-ox-500)] hover:shadow-[0_18px_36px_-22px_rgba(122,31,43,0.45)]"
-    >
+    <div className="paper-card group relative block h-full overflow-hidden rounded-md transition hover:border-[var(--color-ox-500)] hover:shadow-[0_18px_36px_-22px_rgba(122,31,43,0.45)] active:scale-[0.985]">
       <a
         href={ad.canonicalUrl}
         target="_blank"
@@ -127,6 +120,6 @@ export function AdCardMobile({ ad }: { ad: Ad }) {
 
       {/* Watchlist button — overlay on image */}
       <WatchlistButton id={ad.id} className="absolute right-2.5 top-2.5 z-10" />
-    </motion.div>
+    </div>
   );
 }
