@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 import path from "node:path";
 
 const nextConfig: NextConfig = {
-  // Minimal bundle for Docker — copies only the files needed at runtime.
-  output: "standalone",
   turbopack: {
     root: path.resolve(__dirname),
   },
