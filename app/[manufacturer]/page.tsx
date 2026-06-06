@@ -10,8 +10,8 @@ export const revalidate = 60;
 
 // Pre-build a static HTML for every manufacturer at build time. Navigations
 // then hit a static cache; the click feels instant and the DB doesn't run.
-export function generateStaticParams() {
-  return db
+export async function generateStaticParams() {
+  return await db
     .select({ manufacturer: schema.manufacturers.slug })
     .from(schema.manufacturers)
     .all();
@@ -25,14 +25,14 @@ export default async function ManufacturerPage({
   params: Params;
 }) {
   const { manufacturer: slug } = await params;
-  const m = db
+  const m = await db
     .select()
     .from(schema.manufacturers)
     .where(eq(schema.manufacturers.slug, slug))
     .get();
   if (!m) notFound();
 
-  const models = db
+  const models = await db
     .select({
       id: schema.models.id,
       slug: schema.models.slug,
@@ -52,7 +52,7 @@ export default async function ManufacturerPage({
 
   const modelIds = models.map((mo) => mo.id);
   const newest = modelIds.length
-    ? db
+    ? await db
         .select()
         .from(schema.ads)
         .where(

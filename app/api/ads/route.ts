@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
   if (ids.length === 0) return NextResponse.json({ ads: [] });
 
-  const rows = db
+  const rows = await db
     .select()
     .from(schema.ads)
     .where(and(inArray(schema.ads.id, ids), isNull(schema.ads.removedAt)))

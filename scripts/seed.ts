@@ -1,15 +1,16 @@
+import "./_env";
 import { eq, and, notInArray, sql } from "drizzle-orm";
 import { db, schema } from "../db/client";
 import { CATALOG } from "../lib/catalog";
 
-function seed() {
+async function seed() {
   let mCount = 0;
   let modelCount = 0;
   let modelsDeleted = 0;
 
   for (let i = 0; i < CATALOG.length; i++) {
     const m = CATALOG[i];
-    const existing = db
+    const existing = await db
       .select({ id: schema.manufacturers.id })
       .from(schema.manufacturers)
       .where(eq(schema.manufacturers.slug, m.slug))
@@ -18,7 +19,8 @@ function seed() {
     let manufacturerId: number;
     if (existing) {
       manufacturerId = existing.id;
-      db.update(schema.manufacturers)
+      await db
+        .update(schema.manufacturers)
         .set({
           name: m.name,
           blurb: m.blurb ?? null,
@@ -28,7 +30,7 @@ function seed() {
         .where(eq(schema.manufacturers.id, manufacturerId))
         .run();
     } else {
-      const inserted = db
+      const inserted = await db
         .insert(schema.manufacturers)
         .values({
           slug: m.slug,
@@ -45,7 +47,7 @@ function seed() {
 
     for (let j = 0; j < m.models.length; j++) {
       const model = m.models[j];
-      const existingModel = db
+      const existingModel = await db
         .select({ id: schema.models.id })
         .from(schema.models)
         .where(
@@ -57,7 +59,8 @@ function seed() {
         .get();
 
       if (existingModel) {
-        db.update(schema.models)
+        await db
+          .update(schema.models)
           .set({
             name: model.name,
             searchQuery: model.query,
@@ -67,7 +70,8 @@ function seed() {
           .where(eq(schema.models.id, existingModel.id))
           .run();
       } else {
-        db.insert(schema.models)
+        await db
+          .insert(schema.models)
           .values({
             manufacturerId,
             slug: model.slug,
@@ -84,7 +88,7 @@ function seed() {
     // Remove models that exist in DB for this manufacturer but not in catalog.
     // Foreign-key cascade drops their ads automatically.
     const keepSlugs = m.models.map((mo) => mo.slug);
-    const deleted = db
+    const deleted = await db
       .delete(schema.models)
       .where(
         and(
@@ -95,7 +99,7 @@ function seed() {
         ),
       )
       .run();
-    modelsDeleted += deleted.changes;
+    modelsDeleted += deleted.rowsAffected ?? 0;
   }
 
   console.log(
@@ -103,4 +107,7 @@ function seed() {
   );
 }
 
-seed();
+seed().catch((err) => {
+  console.error("Seed failed:", err);
+  process.exit(1);
+});

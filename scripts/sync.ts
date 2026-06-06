@@ -1,3 +1,4 @@
+import "./_env";
 import { runSync } from "../lib/sync";
 
 const ids = process.argv

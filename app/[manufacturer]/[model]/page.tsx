@@ -138,14 +138,14 @@ export default async function ModelPage({
   const { manufacturer: mSlug, model: modSlug } = await params;
   const sp = await searchParams;
 
-  const m = db
+  const m = await db
     .select()
     .from(schema.manufacturers)
     .where(eq(schema.manufacturers.slug, mSlug))
     .get();
   if (!m) notFound();
 
-  const mod = db
+  const mod = await db
     .select()
     .from(schema.models)
     .where(
@@ -193,7 +193,7 @@ export default async function ModelPage({
     }
   })();
 
-  const rows = db
+  const rows = await db
     .select()
     .from(schema.ads)
     .where(and(...filters))

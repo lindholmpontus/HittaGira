@@ -13,23 +13,25 @@ export const revalidate = 60;
 
 const DAY_MS = 24 * 3600 * 1000;
 
-export default function HomePage() {
-  const manufacturers = db
+export default async function HomePage() {
+  const manufacturers = await db
     .select()
     .from(schema.manufacturers)
     .orderBy(schema.manufacturers.sortOrder)
     .all();
 
-  const stats = db.all<{
-    manufacturer_id: number;
-    ad_count: number;
-  }>(sql`
+  const statsResult = await db.run(sql`
     SELECT m.manufacturer_id AS manufacturer_id,
            COUNT(a.id) AS ad_count
     FROM models m
     LEFT JOIN ads a ON a.model_id = m.id AND a.removed_at IS NULL
     GROUP BY m.manufacturer_id
   `);
+
+  const stats = statsResult.rows as unknown as Array<{
+    manufacturer_id: number;
+    ad_count: number;
+  }>;
 
   const statsByMaker = new Map(stats.map((s) => [s.manufacturer_id, s]));
 
@@ -47,7 +49,7 @@ export default function HomePage() {
   // Sort by the actual listing date (publishedAt) — falling back to firstSeenAt
   // for sources that don't publish a date. This avoids backfilled shop items
   // (e.g. a year-old Musikbörsen post we just discovered) dominating the feed.
-  const newestAds = db
+  const newestAds = await db
     .select()
     .from(schema.ads)
     .where(isNull(schema.ads.removedAt))

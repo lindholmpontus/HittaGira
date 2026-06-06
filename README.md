@@ -4,8 +4,8 @@ An independent register of used guitars in Sweden — aggregates listings
 from Blocket, Tradera, Musikbörsen, GuitarGeeks and DLX Music into one
 editorial browsing experience.
 
-Stack: Next.js 15 (App Router) · SQLite via `better-sqlite3` · Drizzle ORM
-· Tailwind 4 · Motion · TypeScript.
+Stack: Next.js 15 (App Router) · Turso (hosted libSQL/SQLite) · Drizzle
+ORM · Tailwind 4 · Motion · TypeScript.
 
 ---
 
@@ -16,18 +16,24 @@ git clone https://github.com/lindholmpontus/HittaGira.git
 cd HittaGira
 npm install
 
-# Configure local env
+# 1. Get a Turso DB
+#    - Sign up at https://turso.tech (free, no card)
+#    - Create a database (any region)
+#    - Generate a Group/Database token under the DB's "Tokens" tab
+#      → set access to Read & Write
+#
+# 2. Configure local env
 cp .env.example .env.local
-# (the defaults in .env.example already work for local dev)
+# → edit .env.local, paste in TURSO_DATABASE_URL and TURSO_AUTH_TOKEN
 
-# Create the schema and seed the catalog of makers + models
-npm run db:migrate
-npm run db:seed
+# 3. Initialize the DB
+npm run db:migrate   # creates the schema
+npm run db:seed      # populates the catalog of 14 makers + 60 models
 
-# Pull fresh data from all sources (~4 min — Musikbörsen fetches per item)
+# 4. Pull fresh data from every source (~5-10 min the first time)
 npm run sync
 
-# Run the dev server
+# 5. Run the dev server
 npm run dev
 # → http://localhost:3000
 ```
@@ -54,108 +60,89 @@ lib/
   catalog.ts          Seed data: manufacturers, models, search queries
 db/
   schema.ts           Drizzle schema (manufacturers, models, ads, …)
+  client.ts           libSQL client + Drizzle binding
+.github/workflows/
+  sync.yml            Cron — runs sync every 30 min
 public/
   logos/              Maker wordmarks
-  silhouettes/        Per-model SVG body silhouettes (optional)
 ```
 
 ## Scripts
 
-| command             | what it does                                        |
-| ------------------- | --------------------------------------------------- |
-| `npm run dev`       | Next.js dev server with Turbopack                   |
-| `npm run build`     | Production build                                    |
-| `npm run start`     | Production server (after `build`)                   |
-| `npm run db:migrate`| Apply Drizzle migrations to the SQLite file         |
-| `npm run db:seed`   | Sync `lib/catalog.ts` into the DB (idempotent)      |
-| `npm run sync`      | Pull fresh listings from every source               |
+| command              | what it does                                       |
+| -------------------- | -------------------------------------------------- |
+| `npm run dev`        | Next.js dev server                                 |
+| `npm run build`      | Production build                                   |
+| `npm run start`      | Production server (after `build`)                  |
+| `npm run db:migrate` | Apply Drizzle migrations to the Turso DB           |
+| `npm run db:seed`    | Sync `lib/catalog.ts` into the DB (idempotent)     |
+| `npm run sync`       | Pull fresh listings from every source              |
 
 `npm run db:seed` is idempotent — it updates existing makers/models and
 deletes any rows whose slug is no longer in `lib/catalog.ts` (ads cascade).
 
-`npm run sync` takes ~4 minutes end-to-end because Musikbörsen requires
-one HTTP request per listing for the price + image.
-
 ## Environment variables
 
-See `.env.example` for the full list with defaults. The three that
-matter:
+See `.env.example` for the full list. The three that matter:
 
-- `DATABASE_URL` — path to the SQLite file, prefixed with `file:`. In
-  production, point this at a persistent volume.
-- `BLOCKET_API_BASE` — leave at the default unless self-hosting a
-  mirror.
-- `SYNC_TOKEN` — Bearer token guarding `POST /api/sync`. Generate a
-  random string in production: `openssl rand -hex 32`.
+- `TURSO_DATABASE_URL` — your `libsql://...` URL from the Turso dashboard.
+- `TURSO_AUTH_TOKEN` — a Read & Write group/database token from Turso.
+- `SYNC_TOKEN` — Bearer token guarding `POST /api/sync`. Only relevant if
+  you want to trigger syncs over HTTP. The GitHub Actions cron uses
+  `TURSO_*` directly and skips this.
 
 ## Triggering sync remotely
 
-Once deployed, kick off a sync via:
+Once deployed, kick off an extra sync via:
 
 ```bash
 curl -X POST https://<your-host>/api/sync \
   -H "Authorization: Bearer $SYNC_TOKEN"
 ```
 
-Returns `{ ok: true, stats: { … } }` on success.
+Returns `{ ok: true, stats: { … } }` on success. Or trigger the GitHub
+Action workflow manually from the Actions tab.
 
-## Deployment
+## Deployment — Vercel + Turso
 
-The site is dynamic Next.js + a SQLite file that needs to persist across
-requests **and** be writable by the sync job. That rules out Vercel
-serverless (ephemeral filesystem). Two options that work:
+### 1. Push the repo to GitHub
 
-### Fly.io (recommended — free tier sufficient)
+Already done if you cloned this — otherwise create a repo and `git push`.
 
-Fly.io supports persistent volumes, and a small VM is plenty here.
+### 2. Sign up at https://vercel.com
 
-1. Install `flyctl` and `fly auth login`
-2. `fly launch --no-deploy` — accept the defaults; this generates a
-   `fly.toml`
-3. Create a volume for the database:
-   ```bash
-   fly volumes create hittagira_data --size 1 --region arn
-   ```
-4. Mount it in `fly.toml`:
-   ```toml
-   [[mounts]]
-   source = "hittagira_data"
-   destination = "/data"
-   ```
-5. Set env vars:
-   ```bash
-   fly secrets set DATABASE_URL=file:/data/hittagira.db
-   fly secrets set SYNC_TOKEN=$(openssl rand -hex 32)
-   ```
-6. `fly deploy`
-7. SSH in once to seed and run the first sync:
-   ```bash
-   fly ssh console
-   npm run db:migrate
-   npm run db:seed
-   npm run sync
-   ```
+Connect your GitHub account. No credit card required for the Hobby plan.
 
-For a recurring sync, schedule a Fly Machine that runs `npm run sync`
-once an hour, or hit `/api/sync` from any external cron (cron-job.org,
-GitHub Actions on schedule, etc.).
+### 3. Import the repo
 
-### A small VPS (Hetzner, DigitalOcean)
+"Add New… → Project" → pick the repo → Vercel detects Next.js
+automatically. Before clicking Deploy, set environment variables:
 
-Roughly:
+| name                  | value                                      |
+| --------------------- | ------------------------------------------ |
+| `TURSO_DATABASE_URL`  | from your Turso dashboard                  |
+| `TURSO_AUTH_TOKEN`    | the R/W token you generated                |
+| `SYNC_TOKEN`          | a random string (`openssl rand -hex 32`)   |
 
-```bash
-# on the VPS
-git clone … && cd HittaGira
-npm install && npm run build
-# Write a .env.local with production values
-sudo systemd … or pm2 start "npm run start"
-# cron entry — every hour
-0 * * * * cd /srv/hittagira && /usr/local/bin/npm run sync
-```
+Click Deploy. First deploy is ~2 min.
 
-Any host with a persistent disk works; Next.js standalone output is the
-smallest footprint.
+### 4. Add the GitHub secrets for the sync cron
+
+In your GitHub repo: **Settings → Secrets and variables → Actions →
+"New repository secret"**. Add:
+
+- `TURSO_DATABASE_URL` (same as Vercel)
+- `TURSO_AUTH_TOKEN` (same as Vercel)
+
+The workflow at `.github/workflows/sync.yml` will run every 30 minutes
+and pull fresh listings into Turso. Vercel reads from Turso, so the live
+site updates automatically.
+
+### 5. (Optional) Custom domain
+
+In Vercel: Project → Settings → Domains → "Add". Paste `hittagira.se`.
+Vercel shows you the DNS records to add at your registrar. Cert
+provisions automatically once DNS propagates (~1-30 min).
 
 ## Adding a new source
 
@@ -163,11 +150,14 @@ smallest footprint.
    generator `search(query)`).
 2. Add the source id, label and colour to `lib/sources.ts`.
 3. Import the adapter and push it into `ADAPTERS` in `lib/sync.ts`.
-4. Run `npm run sync`.
+4. `git push` — Vercel redeploys, next cron tick pulls from the new
+   source.
 
 ## Adding a new manufacturer or model
 
-Edit `lib/catalog.ts`, then `npm run db:seed` and `npm run sync`.
+Edit `lib/catalog.ts`, `git push`. Then trigger a seed + sync from your
+local machine (`npm run db:seed && npm run sync`) or wait for the next
+cron tick.
 
 ## Legal note
 

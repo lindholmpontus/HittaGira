@@ -16,7 +16,6 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "www.dlxmusic.se" },
     ],
   },
-  serverExternalPackages: ["better-sqlite3"],
 };
 
 export default nextConfig;

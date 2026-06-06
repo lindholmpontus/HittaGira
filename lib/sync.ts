@@ -56,13 +56,13 @@ async function syncModelForSource(
   for await (const ads of adapter.search(query)) {
     for (const ad of ads) {
       seenSourceIds.push(ad.sourceAdId);
-      upsertAd(modelId, adapter.id, ad, stats);
+      await upsertAd(modelId, adapter.id, ad, stats);
     }
   }
 
   // mark previously-seen ads for this (model, source) that weren't in this run as removed
   if (seenSourceIds.length > 0) {
-    db.run(sql`
+    await db.run(sql`
       UPDATE ads
       SET removed_at = (unixepoch() * 1000)
       WHERE model_id = ${modelId}
@@ -76,13 +76,13 @@ async function syncModelForSource(
   }
 }
 
-function upsertAd(
+async function upsertAd(
   modelId: number,
   source: SourceId,
   ad: NormalizedAd,
   stats: SyncStats,
-): void {
-  const existing = db
+): Promise<void> {
+  const existing = await db
     .select({
       id: schema.ads.id,
       priceAmount: schema.ads.priceAmount,
@@ -99,7 +99,7 @@ function upsertAd(
   const now = new Date();
 
   if (!existing) {
-    const inserted = db
+    const inserted = await db
       .insert(schema.ads)
       .values({
         source,
@@ -133,12 +133,14 @@ function upsertAd(
     stats.adsUpserted += 1;
     stats.sourceBreakdown[source].new += 1;
     if (ad.priceAmount != null && inserted) {
-      db.insert(schema.priceHistory)
+      await db
+        .insert(schema.priceHistory)
         .values({ adId: inserted.id, priceAmount: ad.priceAmount, observedAt: now })
         .run();
     }
   } else {
-    db.update(schema.ads)
+    await db
+      .update(schema.ads)
       .set({
         modelId,
         heading: ad.heading,
@@ -162,7 +164,8 @@ function upsertAd(
     stats.adsUpserted += 1;
     stats.sourceBreakdown[source].updated += 1;
     if (ad.priceAmount != null && ad.priceAmount !== existing.priceAmount) {
-      db.insert(schema.priceHistory)
+      await db
+        .insert(schema.priceHistory)
         .values({
           adId: existing.id,
           priceAmount: ad.priceAmount,
@@ -177,14 +180,14 @@ function upsertAd(
 export async function runSync(modelIds?: number[]): Promise<SyncStats> {
   const stats = emptyStats();
 
-  const run = db
+  const run = await db
     .insert(schema.syncRuns)
     .values({})
     .returning({ id: schema.syncRuns.id })
     .get();
 
   try {
-    const allModels = db
+    const allModels = await db
       .select({
         id: schema.models.id,
         searchQuery: schema.models.searchQuery,
@@ -212,7 +215,8 @@ export async function runSync(modelIds?: number[]): Promise<SyncStats> {
       stats.modelsProcessed += 1;
     }
 
-    db.update(schema.syncRuns)
+    await db
+      .update(schema.syncRuns)
       .set({
         finishedAt: new Date(),
         modelsProcessed: stats.modelsProcessed,
@@ -225,7 +229,8 @@ export async function runSync(modelIds?: number[]): Promise<SyncStats> {
 
     return stats;
   } catch (err) {
-    db.update(schema.syncRuns)
+    await db
+      .update(schema.syncRuns)
       .set({
         finishedAt: new Date(),
         error: err instanceof Error ? err.message : String(err),

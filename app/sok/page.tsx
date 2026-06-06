@@ -18,7 +18,7 @@ export default async function SearchPage({
   const hasQuery = query.length >= 2;
 
   const results = hasQuery
-    ? db
+    ? await db
         .select()
         .from(schema.ads)
         .where(

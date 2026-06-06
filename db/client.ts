@@ -1,16 +1,18 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { mkdirSync } from "node:fs";
-import { dirname } from "node:path";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
 
-const dbPath = process.env.DATABASE_URL?.replace(/^file:/, "") ?? "./data/hittagira.db";
+const url = process.env.TURSO_DATABASE_URL;
+const authToken = process.env.TURSO_AUTH_TOKEN;
 
-mkdirSync(dirname(dbPath), { recursive: true });
+if (!url) {
+  throw new Error(
+    "TURSO_DATABASE_URL is not set. Add it to .env.local for development " +
+      "or to your hosting platform's environment variables for production.",
+  );
+}
 
-const sqlite = new Database(dbPath);
-sqlite.pragma("journal_mode = WAL");
-sqlite.pragma("foreign_keys = ON");
+const client = createClient({ url, authToken });
 
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(client, { schema });
 export { schema };
