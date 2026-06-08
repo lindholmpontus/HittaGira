@@ -63,8 +63,9 @@ export default function MerPage() {
               Tradera
             </span>
             , <span className="string-underline">Musikbörsen</span>,{" "}
-            <span className="string-underline">GuitarGeeks</span> och{" "}
-            <span className="string-underline">DLX Music</span> — och visar
+            <span className="string-underline">GuitarGeeks</span>,{" "}
+            <span className="string-underline">DLX Music</span> och{" "}
+            <span className="string-underline">Halkans</span> — och visar
             dig det nyaste först.
           </p>
 

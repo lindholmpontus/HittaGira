@@ -136,6 +136,7 @@ export const CATALOG: ManufacturerSeed[] = [
     name: "ESP / LTD",
     blurb:
       "Japanska ESP grundades 1975 i Tokyos Sannō-distrikt och blev tidigt ett av metalvärldens favoritmärken. LTD-systermärket erbjuder samma formspråk till en mer åtkomlig prislapp.",
+    logoFile: "esp-guitars-logo-vector-free-download-11574124612tbevrwk2t3.png",
     models: [
       { slug: "eclipse", name: "Eclipse", query: "ESP Eclipse", guitarType: EL },
       { slug: "horizon", name: "Horizon", query: "ESP Horizon", guitarType: EL },
@@ -160,6 +161,7 @@ export const CATALOG: ManufacturerSeed[] = [
     name: "Music Man",
     blurb:
       "Grundat 1971 av tidigare Fender-ingenjörer, övertaget av familjen Ball 1984. StingRay-basen definierade ett ljud, JP-modellerna fångar John Petruccis precision.",
+    logoFile: "music-man-logo-png-transparent.png",
     models: [
       { slug: "majesty", name: "Majesty", query: "Music Man Majesty", guitarType: EL },
       { slug: "jp", name: "JP / John Petrucci", query: "Music Man JP", guitarType: EL },
@@ -171,6 +173,7 @@ export const CATALOG: ManufacturerSeed[] = [
     name: "Rickenbacker",
     blurb:
       "Tillverkare av världens första elgitarr 1932. Den jingle-jangle-klingande 12-strängade 360 blev Beatles ljud, 4003-basen definierade Chris Squire och Geddy Lee.",
+    logoFile: "Rickenbacker-Logo.wine.svg",
     models: [
       { slug: "330", name: "330", query: "Rickenbacker 330", guitarType: HALV },
       { slug: "360", name: "360", query: "Rickenbacker 360", guitarType: HALV },

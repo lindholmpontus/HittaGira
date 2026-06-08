@@ -164,32 +164,27 @@ export default async function HomePage() {
             <AnimatedItem key={m.id}>
               <Link
                 href={`/${m.slug}`}
-                className="paper-card group block h-full overflow-hidden rounded-md transition hover:border-[var(--color-ox-500)] hover:shadow-[0_18px_36px_-22px_rgba(122,31,43,0.45)] active:scale-[0.985]"
+                className="paper-card group flex h-full flex-col overflow-hidden rounded-md transition hover:border-[var(--color-ox-500)] hover:shadow-[0_18px_36px_-22px_rgba(122,31,43,0.45)] active:scale-[0.985]"
               >
-                <div className="relative grid aspect-[5/3] place-items-center border-b border-[var(--color-line-soft)] bg-[var(--color-surface-2)] p-5 transition-colors group-hover:bg-[var(--color-bg-soft)]">
+                <div className="relative flex h-24 items-center justify-center border-b border-[var(--color-line-soft)] bg-[var(--color-surface-2)] px-4 transition-colors group-hover:bg-[var(--color-bg-soft)] sm:h-28">
                   <span className="absolute left-2 top-1.5 font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--color-ink-mute)]/80">
                     № {String(i + 1).padStart(2, "0")}
                   </span>
+                  {/* Fixed-height band so every logo renders at a consistent
+                      size regardless of its aspect ratio. */}
                   <ManufacturerLogo
                     name={m.name}
                     logoFile={m.logoFile}
-                    className="size-full flex items-center justify-center"
+                    className="flex h-12 w-full items-center justify-center sm:h-14"
                   />
                 </div>
                 <div className="p-3.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <span
-                      className="truncate text-base text-[var(--color-ink)] group-hover:text-[var(--color-ox-500)]"
-                      style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}
-                    >
-                      {m.name}
-                    </span>
-                    {m.adCount > 0 && (
-                      <span className="shrink-0 rounded-full bg-[var(--color-ox-500)]/10 px-2 py-0.5 specs text-[10.5px] font-semibold text-[var(--color-ox-500)]">
-                        {m.adCount}
-                      </span>
-                    )}
-                  </div>
+                  <span
+                    className="block truncate text-base text-[var(--color-ink)] group-hover:text-[var(--color-ox-500)]"
+                    style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}
+                  >
+                    {m.name}
+                  </span>
                   <div className="mt-1 truncate font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--color-ink-mute)]">
                     {m.adCount === 0
                       ? "Inga aktiva"
