@@ -20,6 +20,7 @@ type Ad = {
   canonicalUrl: string;
   publishedAt: Date | null;
   firstSeenAt: Date;
+  tradeType?: string | null;
 };
 
 const DAY_MS = 24 * 3600 * 1000;
@@ -38,14 +39,15 @@ export function AdCardMobile({ ad }: { ad: Ad }) {
         rel="noopener noreferrer"
         className="block"
       >
-        {/* Image plate */}
+        {/* Image plate — object-contain guarantees the whole guitar is
+            visible (letterboxed) instead of cropping wide/odd photos. */}
         <div className="relative aspect-[4/3] overflow-hidden border-b border-[var(--color-line-soft)] bg-[var(--color-bg-soft)]">
           {ad.primaryImageUrl ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               src={ad.primaryImageUrl}
               alt={ad.heading}
-              className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+              className="h-full w-full object-contain p-3 transition-transform duration-700 ease-out group-hover:scale-[1.05]"
               loading="lazy"
             />
           ) : (
@@ -114,6 +116,7 @@ export function AdCardMobile({ ad }: { ad: Ad }) {
             buyNowPrice={ad.buyNowPrice}
             totalBids={ad.totalBids}
             auctionEndAt={ad.auctionEndAt}
+            tradeType={ad.tradeType}
           />
         </div>
       </a>

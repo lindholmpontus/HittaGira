@@ -23,6 +23,7 @@ type Ad = {
   canonicalUrl: string;
   publishedAt: Date | null;
   firstSeenAt: Date;
+  tradeType: string | null;
 };
 
 type ApiAd = Omit<Ad, "auctionEndAt" | "publishedAt" | "firstSeenAt"> & {

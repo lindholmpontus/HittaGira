@@ -8,6 +8,7 @@ type Props = {
   buyNowPrice: number | null;
   totalBids: number | null;
   auctionEndAt: Date | null;
+  tradeType?: string | null;
 };
 
 export function AdPriceTag({
@@ -17,8 +18,17 @@ export function AdPriceTag({
   buyNowPrice,
   totalBids,
   auctionEndAt,
+  tradeType,
 }: Props) {
   if (!isAuction) {
+    // "CALL" listings (e.g. Halkans) carry no price — invite contact instead.
+    if (tradeType === "call") {
+      return (
+        <span className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-soft)]">
+          Ring för pris
+        </span>
+      );
+    }
     return (
       <div className="flex items-baseline gap-1.5">
         <span className="specs text-lg font-semibold tracking-tight text-[var(--color-ox-500)]">

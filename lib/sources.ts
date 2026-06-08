@@ -3,7 +3,8 @@ export type SourceId =
   | "tradera"
   | "musikborsen"
   | "guitargeeks"
-  | "dlxmusic";
+  | "dlxmusic"
+  | "halkans";
 
 export type SourceMeta = {
   id: SourceId;
@@ -43,6 +44,12 @@ export const SOURCES: Record<SourceId, SourceMeta> = {
     id: "dlxmusic",
     label: "DLX Music",
     color: "#6B3F6B",
+    kind: "shop",
+  },
+  halkans: {
+    id: "halkans",
+    label: "Halkans",
+    color: "#9C6B3F",
     kind: "shop",
   },
 };
