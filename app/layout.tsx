@@ -54,11 +54,8 @@ export default function RootLayout({
         {/* MASTHEAD — magazine-style banner above the page              */}
         {/* ------------------------------------------------------------ */}
         <div className="border-b border-[var(--color-line)]/60 bg-[var(--color-bg)]/70 backdrop-blur-sm">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-1.5">
+          <div className="mx-auto flex max-w-6xl items-center justify-center gap-3 px-4 py-1.5">
             <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--color-ink-mute)]">
-              Vol. I · Nr. 06 · {currentEdition()}
-            </span>
-            <span className="hidden sm:inline font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--color-ink-mute)]">
               En oberoende katalog över andrahandsgitarrer i Sverige
             </span>
           </div>
@@ -80,7 +77,7 @@ export default function RootLayout({
               <HeaderLink href="/">Nytt</HeaderLink>
               <HeaderLink href="/sok">Sök</HeaderLink>
               <HeaderLink href="/bevakade">Bevakade</HeaderLink>
-              <HeaderLink href="/mer">Kolofon</HeaderLink>
+              <HeaderLink href="/mer">Om</HeaderLink>
             </nav>
             <div className="ml-auto flex items-center gap-3">
               <Link
@@ -120,7 +117,7 @@ export default function RootLayout({
                 href="/mer"
                 className="hover:text-[var(--color-ox-500)]"
               >
-                Kolofon
+                Om
               </Link>
             </span>
           </div>
@@ -147,23 +144,4 @@ function HeaderLink({
       {children}
     </Link>
   );
-}
-
-function currentEdition(): string {
-  const now = new Date();
-  const months = [
-    "Januari",
-    "Februari",
-    "Mars",
-    "April",
-    "Maj",
-    "Juni",
-    "Juli",
-    "Augusti",
-    "September",
-    "Oktober",
-    "November",
-    "December",
-  ];
-  return `${months[now.getMonth()]} ${now.getFullYear()}`;
 }

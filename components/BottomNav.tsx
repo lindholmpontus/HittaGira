@@ -37,7 +37,7 @@ const tabs: Tab[] = [
   { href: "/", label: "Nytt", icon: HomeIcon },
   { href: "/sok", label: "Sök", icon: SearchIcon },
   { href: "/bevakade", label: "Bevakade", icon: HeartIcon },
-  { href: "/mer", label: "Kolofon", icon: BookIcon },
+  { href: "/mer", label: "Om", icon: BookIcon },
 ];
 
 function isActive(pathname: string, href: string): boolean {

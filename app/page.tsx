@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { desc, isNull, sql } from "drizzle-orm";
+import { and, count, desc, gt, isNull, sql } from "drizzle-orm";
 import { db, schema } from "@/db/client";
 import { ManufacturerLogo } from "@/components/ManufacturerLogo";
 import { AdCardMobile } from "@/components/AdCardMobile";
@@ -59,10 +59,14 @@ export default async function HomePage() {
     .limit(12)
     .all();
 
-  const cutoff = Date.now() - DAY_MS;
-  const newToday = newestAds.filter(
-    (a) => a.firstSeenAt.getTime() > cutoff,
-  ).length;
+  // Count *every* ad first seen in the last 24h — not just those in the 12-row
+  // preview above (which capped the figure at "+12").
+  const cutoff = new Date(Date.now() - DAY_MS);
+  const [{ newToday }] = await db
+    .select({ newToday: count() })
+    .from(schema.ads)
+    .where(and(isNull(schema.ads.removedAt), gt(schema.ads.firstSeenAt, cutoff)))
+    .all();
 
   return (
     <div className="space-y-16 sm:space-y-24">
