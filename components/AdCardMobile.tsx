@@ -29,7 +29,6 @@ export function AdCardMobile({ ad }: { ad: Ad }) {
   const now = Date.now();
   const isNew = ad.firstSeenAt && now - ad.firstSeenAt.getTime() < DAY_MS;
   const source = getSource(ad.source);
-  const catalogNo = ad.id.toString().padStart(4, "0").slice(-4);
 
   return (
     <div className="paper-card group relative block h-full overflow-hidden rounded-md transition hover:border-[var(--color-ox-500)] hover:shadow-[0_18px_36px_-22px_rgba(122,31,43,0.45)] active:scale-[0.985]">
@@ -88,12 +87,8 @@ export function AdCardMobile({ ad }: { ad: Ad }) {
 
         {/* Body */}
         <div className="relative p-3.5">
-          <span className="absolute right-3 top-3 font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--color-ink-mute)]/80">
-            № {catalogNo}
-          </span>
-
           <div
-            className="min-h-[2.6rem] pr-12 text-[15px] leading-snug text-[var(--color-ink)] line-clamp-2 group-hover:text-[var(--color-ox-500)]"
+            className="min-h-[2.6rem] text-[15px] leading-snug text-[var(--color-ink)] line-clamp-2 group-hover:text-[var(--color-ox-500)]"
             style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}
           >
             {ad.heading}

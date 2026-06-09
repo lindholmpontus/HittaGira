@@ -15,6 +15,8 @@ import { db, schema } from "@/db/client";
 import { AdCardMobile } from "@/components/AdCardMobile";
 import { MobileFilters } from "@/components/MobileFilters";
 import { SOURCES, SOURCE_IDS, type SourceId } from "@/lib/sources";
+import { PLACES, RADII, getPlace, parseRadius, type RadiusKm } from "@/lib/places";
+import { withinRadius } from "@/lib/geo";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +38,8 @@ type Search = Promise<{
   seller?: string;
   min?: string;
   max?: string;
+  near?: string;
+  dist?: string;
   page?: string;
 }>;
 
@@ -66,6 +70,10 @@ export default async function ArchivePage({
     sp.min && !Number.isNaN(Number(sp.min)) ? Number(sp.min) : undefined;
   const max =
     sp.max && !Number.isNaN(Number(sp.max)) ? Number(sp.max) : undefined;
+  // Location radius: a centre (one of our curated cities) plus a distance.
+  // The radius only has any effect once a place is chosen.
+  const place = getPlace(sp.near);
+  const radius: RadiusKm = parseRadius(sp.dist);
   const page = Math.max(1, Number(sp.page) || 1);
   const limit = page * PER_PAGE;
 
@@ -85,6 +93,7 @@ export default async function ArchivePage({
     filters.push(eq(schema.ads.isRetailer, true));
   if (min != null) filters.push(gte(schema.ads.priceAmount, min));
   if (max != null) filters.push(lte(schema.ads.priceAmount, max));
+  if (place) filters.push(withinRadius(place, radius));
 
   const where = and(...filters);
 
@@ -121,6 +130,7 @@ export default async function ArchivePage({
     sellerFilter !== "all" ||
     min != null ||
     max != null ||
+    place != null ||
     sort !== "newest";
 
   const hasMore = rows.length < total;
@@ -135,6 +145,10 @@ export default async function ArchivePage({
     if (sellerFilter !== "all") p.set("seller", sellerFilter);
     if (min != null) p.set("min", String(min));
     if (max != null) p.set("max", String(max));
+    if (place) {
+      p.set("near", place.name);
+      p.set("dist", String(radius));
+    }
     for (const [k, v] of Object.entries(extra)) {
       if (v === "") p.delete(k);
       else p.set(k, v);
@@ -182,6 +196,12 @@ export default async function ArchivePage({
         )}
         {max != null && (
           <input type="hidden" name="max" defaultValue={String(max)} />
+        )}
+        {place && (
+          <>
+            <input type="hidden" name="near" defaultValue={place.name} />
+            <input type="hidden" name="dist" defaultValue={String(radius)} />
+          </>
         )}
         <div className="flex items-center gap-2">
           <span className="pl-2 text-[var(--color-ink-mute)]">
@@ -250,6 +270,8 @@ export default async function ArchivePage({
           sellerFilter={sellerFilter}
           min={min}
           max={max}
+          near={place?.name}
+          radius={radius}
         />
         <button
           type="submit"
@@ -304,6 +326,8 @@ export default async function ArchivePage({
               sellerFilter={sellerFilter}
               min={min}
               max={max}
+              near={place?.name}
+              radius={radius}
             />
             <div className="flex gap-3 pt-2">
               <button
@@ -339,6 +363,13 @@ export default async function ArchivePage({
             <>
               {" "}
               för <span className="text-[var(--color-ink)]">&quot;{query}&quot;</span>
+            </>
+          )}
+          {place && (
+            <>
+              {" "}
+              inom <span className="text-[var(--color-ink)]">{radius} km</span> från{" "}
+              <span className="text-[var(--color-ink)]">{place.name}</span>
             </>
           )}
         </span>
@@ -405,6 +436,8 @@ function FilterControls({
   sellerFilter,
   min,
   max,
+  near,
+  radius,
 }: {
   sort: SortKey;
   srcFilter: "all" | SourceId;
@@ -412,6 +445,8 @@ function FilterControls({
   sellerFilter: SellerKey;
   min?: number;
   max?: number;
+  near?: string;
+  radius: RadiusKm;
 }) {
   return (
     <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-end">
@@ -445,6 +480,25 @@ function FilterControls({
           <option value="all">Alla säljare</option>
           <option value="private">Privat</option>
           <option value="retailer">Återförsäljare</option>
+        </select>
+      </FilterLabel>
+      <FilterLabel label="Plats">
+        <select name="near" defaultValue={near ?? ""} className={fieldClass}>
+          <option value="">Hela Sverige</option>
+          {PLACES.map((p) => (
+            <option key={p.name} value={p.name}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+      </FilterLabel>
+      <FilterLabel label="Inom">
+        <select name="dist" defaultValue={String(radius)} className={fieldClass}>
+          {RADII.map((r) => (
+            <option key={r} value={r}>
+              {r} km
+            </option>
+          ))}
         </select>
       </FilterLabel>
       <FilterLabel label="Min pris (kr)">
