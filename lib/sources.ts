@@ -13,6 +13,12 @@ export type SourceMeta = {
   color: string;
   /** Origin kind — marketplaces are P2P, shops are retailers. */
   kind: "marketplace" | "shop";
+  /**
+   * Lowercase substrings that identify this shop when it appears as an
+   * `organisation_name` on Blocket. Used to suppress duplicates: shops we
+   * already index directly should not also be ingested through Blocket.
+   */
+  blocketOrgPatterns?: readonly string[];
 };
 
 export const SOURCES: Record<SourceId, SourceMeta> = {
@@ -33,24 +39,28 @@ export const SOURCES: Record<SourceId, SourceMeta> = {
     label: "Musikbörsen",
     color: "#3D4B8C",
     kind: "shop",
+    blocketOrgPatterns: ["musikbörsen", "musikborsen"],
   },
   guitargeeks: {
     id: "guitargeeks",
     label: "GuitarGeeks",
     color: "#1F6B6B",
     kind: "shop",
+    blocketOrgPatterns: ["guitargeeks", "guitar geeks"],
   },
   dlxmusic: {
     id: "dlxmusic",
     label: "DLX Music",
     color: "#6B3F6B",
     kind: "shop",
+    blocketOrgPatterns: ["dlx music", "dlxmusic"],
   },
   halkans: {
     id: "halkans",
     label: "Halkans",
     color: "#9C6B3F",
     kind: "shop",
+    blocketOrgPatterns: ["halkans"],
   },
 };
 
@@ -59,6 +69,24 @@ export const SOURCE_IDS = Object.keys(SOURCES) as SourceId[];
 export function getSource(id: string | null | undefined): SourceMeta | null {
   if (!id) return null;
   return (SOURCES as Record<string, SourceMeta>)[id] ?? null;
+}
+
+/**
+ * True when this Blocket retailer is a shop we already index directly,
+ * so the same guitar would otherwise appear twice (once from the shop's
+ * own adapter, once from the company listing on Blocket).
+ */
+export function isDirectlyIndexedShop(
+  organisationName: string | null | undefined,
+): boolean {
+  if (!organisationName) return false;
+  const name = organisationName.toLowerCase();
+  for (const id of SOURCE_IDS) {
+    const patterns = SOURCES[id].blocketOrgPatterns;
+    if (!patterns) continue;
+    if (patterns.some((p) => name.includes(p))) return true;
+  }
+  return false;
 }
 
 export type NormalizedAd = {

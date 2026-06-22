@@ -41,6 +41,24 @@ const NEGATIVE_KEYWORDS = [
   "böcker",
   "skola",
   "noter",
+  // spare parts & decals — Tradera is full of these; titles still name the model
+  "vattendekal",
+  "dekal",
+  "decal",
+  "sticker",
+  "klistermärke",
+  "fjäder",
+  "fjädrar",
+  "svajfjäder",
+  "stallfjäder",
+  "switch tip",
+  "switchknapp",
+  "rattar",
+  "knappar",
+  "knobs",
+  "repro",
+  "replacement",
+  " diy ",
 ];
 
 function passesRelevance(heading: string, query: string): boolean {

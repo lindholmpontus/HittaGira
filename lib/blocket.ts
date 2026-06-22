@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Adapter, NormalizedAd } from "./sources";
+import { isDirectlyIndexedShop, type Adapter, type NormalizedAd } from "./sources";
 
 const BASE = process.env.BLOCKET_API_BASE ?? "https://blocket-api.se";
 
@@ -50,6 +50,24 @@ const NEGATIVE_KEYWORDS = [
   "skola",
   "bok ",
   "böcker",
+  // spare parts & decals — these slip in because the heading still names the model
+  "vattendekal",
+  "dekal",
+  "decal",
+  "sticker",
+  "klistermärke",
+  "fjäder",
+  "fjädrar",
+  "svajfjäder",
+  "stallfjäder",
+  "switch tip",
+  "switchknapp",
+  "rattar",
+  "knappar",
+  "knobs",
+  "repro",
+  "replacement",
+  " diy ",
   "aston martin",
   "la martina",
   "carl martin",
@@ -157,8 +175,10 @@ export const blocketAdapter: Adapter = {
     let page = 1;
     while (page <= maxPages) {
       const result = await fetchPage(query, page);
-      const relevant = result.docs.filter((d) =>
-        passesRelevance(d.heading, query),
+      const relevant = result.docs.filter(
+        (d) =>
+          passesRelevance(d.heading, query) &&
+          !isDirectlyIndexedShop(d.organisation_name),
       );
       yield relevant.map(normalize);
       const last = result.metadata.paging?.last ?? 1;
