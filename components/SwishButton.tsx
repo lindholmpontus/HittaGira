@@ -49,7 +49,7 @@ export function SwishButton({
 
       <dialog
         ref={dialog}
-        aria-labelledby="swish-title"
+        aria-label="Swish"
         // A click on the dialog element itself is a click on the backdrop.
         onClick={(e) => e.target === e.currentTarget && close()}
         className="m-auto w-[min(92vw,22rem)] rounded-xl border border-[var(--color-line)] bg-[var(--color-card)] p-0 text-[var(--color-ink)] shadow-[0_30px_60px_-25px_rgba(26,16,12,0.55)] transition duration-200 starting:scale-95 starting:opacity-0 backdrop:bg-[#1A100C]/45 backdrop:backdrop-blur-[2px]"
@@ -76,14 +76,7 @@ export function SwishButton({
             </svg>
           </button>
 
-          <h2
-            id="swish-title"
-            className="text-2xl"
-            style={{ fontFamily: "var(--font-display)", fontWeight: 500 }}
-          >
-            Swisha en kaffe
-          </h2>
-          <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
+          <p className="text-sm text-[var(--color-ink-soft)]">
             Skanna koden med Swish-appen.
           </p>
 
