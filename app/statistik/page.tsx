@@ -318,8 +318,7 @@ export default async function StatistikPage({
 
 const SUPPORT_LABELS: Record<string, string> = {
   visit: "Besök på Stöd-sidan",
-  swish: "Tryckte Öppna Swish",
-  "swish-copy": "Kopierade Swish-numret",
+  swish: "Klick på Swish",
   buymeacoffee: "Klick till Buy Me a Coffee",
 };
 

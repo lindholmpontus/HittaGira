@@ -5,8 +5,9 @@ import { useEffect, useRef } from "react";
 
 // Sends a beacon to /api/collect on every page view (including client-side
 // navigations), on every click through to an ad (links marked with
-// `data-outbound`) and on the donation buttons on /stod (`data-support`). Only runs in production builds, so `npm run dev` against
-// the live Turso DB doesn't pollute the numbers.
+// `data-outbound`) and on the donation buttons on /stod (`data-support`).
+// Only runs in production builds, so `npm run dev` against the live Turso DB
+// doesn't pollute the numbers.
 
 const IGNORE_KEY = "hittagira:analytics:ignore";
 

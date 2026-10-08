@@ -16,12 +16,6 @@ export const SWISH_NUMBER =
 const SWISH_AMOUNT = 30;
 const SWISH_MESSAGE = "HittaGira";
 
-/** "0701234567" → "070-123 45 67" (other formats are returned as-is). */
-export function formatSwishNumber(digits: string): string {
-  const m = digits.match(/^(07\d)(\d{3})(\d{2})(\d{2})$/);
-  return m ? `${m[1]}-${m[2]} ${m[3]} ${m[4]}` : digits;
-}
-
 /**
  * QR code for the Swish app's scanner, per Swish's QR spec (v1.7.2, §6.1):
  * `C<payee>;<amount>;<message>;<lock mask>`. Amount uses a decimal comma;
@@ -38,8 +32,8 @@ export async function swishQrSvg(number: string): Promise<string> {
 }
 
 /**
- * Opens the Swish app with the payment prefilled. Not an official Swish API
- * (community-documented format), so the number is always shown as a fallback.
+ * Opens the Swish app with the payment prefilled (used on phones). Not an
+ * official Swish API — a community-documented format.
  */
 export function swishAppLink(number: string): string {
   const data = {

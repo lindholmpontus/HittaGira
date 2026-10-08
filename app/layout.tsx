@@ -52,17 +52,6 @@ export default function RootLayout({
     >
       <body className="min-h-screen antialiased">
         {/* ------------------------------------------------------------ */}
-        {/* MASTHEAD — magazine-style banner above the page              */}
-        {/* ------------------------------------------------------------ */}
-        <div className="border-b border-[var(--color-line)]/60 bg-[var(--color-bg)]/70 backdrop-blur-sm">
-          <div className="mx-auto flex max-w-6xl items-center justify-center gap-3 px-4 py-1.5">
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--color-ink-mute)]">
-              En oberoende katalog över andrahandsgitarrer i Sverige
-            </span>
-          </div>
-        </div>
-
-        {/* ------------------------------------------------------------ */}
         {/* HEADER — wordmark + navigation                                */}
         {/* ------------------------------------------------------------ */}
         <header className="sticky top-0 z-20 border-b border-[var(--color-line)] bg-[var(--color-bg)]/92 backdrop-blur-md">

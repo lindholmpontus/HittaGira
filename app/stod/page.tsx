@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CopyButton } from "@/components/CopyButton";
+import { SwishButton } from "@/components/SwishButton";
 import {
   BUY_ME_A_COFFEE_URL,
   SWISH_NUMBER,
-  formatSwishNumber,
   swishAppLink,
   swishQrSvg,
 } from "@/lib/support";
@@ -44,7 +43,7 @@ export default async function StodPage() {
         ovärderligt.
       </p>
 
-      <div className="mt-10 flex max-w-sm flex-col gap-6">
+      <div className="mt-10 grid max-w-md gap-3 sm:grid-cols-2">
         <a
           href={BUY_ME_A_COFFEE_URL}
           target="_blank"
@@ -73,48 +72,11 @@ export default async function StodPage() {
         </a>
 
         {SWISH_NUMBER && qr && (
-          <div>
-            {/* Mobile: jump straight into the app */}
-            <a
-              href={swishAppLink(SWISH_NUMBER)}
-              data-support="swish"
-              className={`${primaryButton} w-full sm:hidden`}
-            >
-              Öppna Swish
-            </a>
-
-            {/* Desktop: scan with the phone */}
-            <div className="hidden items-center gap-5 sm:flex">
-              <div
-                className="w-28 shrink-0 [&>svg]:h-auto [&>svg]:w-full"
-                role="img"
-                aria-label="QR-kod för Swish"
-                dangerouslySetInnerHTML={{ __html: qr }}
-              />
-              <p className="text-sm leading-relaxed text-[var(--color-ink-soft)]">
-                <span className="font-semibold text-[var(--color-ink)]">
-                  Swish
-                </span>
-                <br />
-                Skanna med Swish-appen.
-              </p>
-            </div>
-
-            <div className="mt-3 flex items-center gap-3 text-sm">
-              <span className="text-[var(--color-ink-mute)]">
-                Swish-nummer{" "}
-                <span className="tabular-nums text-[var(--color-ink)]">
-                  {formatSwishNumber(SWISH_NUMBER)}
-                </span>
-              </span>
-              <CopyButton
-                text={SWISH_NUMBER}
-                label="Kopiera"
-                support="swish-copy"
-                className="shrink-0 rounded-full border border-[var(--color-line)] bg-[var(--color-surface)] px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.14em] text-[var(--color-ink-soft)] transition hover:border-[var(--color-ox-500)] hover:text-[var(--color-ox-500)]"
-              />
-            </div>
-          </div>
+          <SwishButton
+            appLink={swishAppLink(SWISH_NUMBER)}
+            qrSvg={qr}
+            className={primaryButton}
+          />
         )}
       </div>
 

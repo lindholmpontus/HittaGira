@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { and, count, desc, gt, isNull, sql } from "drizzle-orm";
+import { and, count, desc, gt, isNotNull, isNull, ne, sql } from "drizzle-orm";
 import { db, schema } from "@/db/client";
 import { ManufacturerLogo } from "@/components/ManufacturerLogo";
 import { AdCardMobile } from "@/components/AdCardMobile";
@@ -49,10 +49,18 @@ export default async function HomePage() {
   // Sort by the actual listing date (publishedAt) — falling back to firstSeenAt
   // for sources that don't publish a date. This avoids backfilled shop items
   // (e.g. a year-old Musikbörsen post we just discovered) dominating the feed.
+  // Ads without a photo are skipped here — a "Bild saknas" card is a poor
+  // front-page teaser. They still show up in search and on model pages.
   const newestAds = await db
     .select()
     .from(schema.ads)
-    .where(isNull(schema.ads.removedAt))
+    .where(
+      and(
+        isNull(schema.ads.removedAt),
+        isNotNull(schema.ads.primaryImageUrl),
+        ne(schema.ads.primaryImageUrl, ""),
+      ),
+    )
     .orderBy(
       desc(sql`COALESCE(${schema.ads.publishedAt}, ${schema.ads.firstSeenAt})`),
     )
