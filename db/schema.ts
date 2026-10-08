@@ -113,6 +113,35 @@ export const syncRuns = sqliteTable("sync_runs", {
   error: text("error"),
 });
 
+// Cookieless visitor analytics. One row per page view, outbound ad click or
+// click on a donation option on /stod ("support").
+// No IPs or cookies are stored — `visitorId` is a hash that rotates daily
+// (see lib/analytics.ts), so a visitor can only be counted within one day.
+export const events = sqliteTable(
+  "events",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    type: text("type", { enum: ["pageview", "outbound", "support"] }).notNull(),
+    path: text("path").notNull(),
+    /** Outbound: the clicked ad's source id (blocket, tradera, …).
+     *  Support: the option used (swish, swish-copy, buymeacoffee). */
+    target: text("target"),
+    /** Hostname (or ?ref= / utm_source) the visitor arrived from. */
+    referrer: text("referrer"),
+    visitorId: text("visitor_id").notNull(),
+    country: text("country"),
+    device: text("device", { enum: ["mobile", "desktop"] }),
+    /** Stockholm calendar date, YYYY-MM-DD — the unit of every report. */
+    day: text("day").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`(unixepoch() * 1000)`),
+  },
+  (t) => ({
+    dayIdx: index("events_day_idx").on(t.day, t.type),
+  }),
+);
+
 export type Manufacturer = typeof manufacturers.$inferSelect;
 export type Model = typeof models.$inferSelect;
 export type Ad = typeof ads.$inferSelect;

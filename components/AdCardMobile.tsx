@@ -36,6 +36,7 @@ export function AdCardMobile({ ad }: { ad: Ad }) {
         href={ad.canonicalUrl}
         target="_blank"
         rel="noopener noreferrer"
+        data-outbound={ad.source}
         className="block"
       >
         {/* Image plate — object-contain guarantees the whole guitar is

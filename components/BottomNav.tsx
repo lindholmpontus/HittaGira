@@ -33,11 +33,22 @@ const BookIcon = (
   </svg>
 );
 
+const CoffeeIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+    <line x1="6" y1="1" x2="6" y2="4" />
+    <line x1="10" y1="1" x2="10" y2="4" />
+    <line x1="14" y1="1" x2="14" y2="4" />
+  </svg>
+);
+
 const tabs: Tab[] = [
   { href: "/", label: "Nytt", icon: HomeIcon },
   { href: "/sok", label: "Sök", icon: SearchIcon },
   { href: "/bevakade", label: "Bevakade", icon: HeartIcon },
   { href: "/mer", label: "Om", icon: BookIcon },
+  { href: "/stod", label: "Stöd", icon: CoffeeIcon },
 ];
 
 function isActive(pathname: string, href: string): boolean {
@@ -53,7 +64,7 @@ export function BottomNav() {
       aria-label="Huvudnavigation"
       className="sm:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-[var(--color-line)] bg-[var(--color-surface)]/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]"
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5">
         {tabs.map((tab) => {
           const active = isActive(pathname, tab.href);
           return (

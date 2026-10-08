@@ -45,8 +45,13 @@ app/                  Next.js routes (App Router)
   [manufacturer]/     Brand page + model pages
   sok/                Full-text search
   bevakade/           Watchlist (client-side via localStorage)
+  statistik/          Private visitor dashboard, gated by STATS_TOKEN
+  stod/               Donations (Buy Me a Coffee + Swish)
+  kontakt/            Feedback form, emailed via Resend
   api/
     ads/              Lookup ads by ID (used by watchlist)
+    collect/          Visitor-stats beacon (page views + ad clicks)
+    contact/          Sends the feedback form
     sync/             HTTP-triggered sync, gated by SYNC_TOKEN
 components/           Card, logo, nav, watchlist button
 lib/
@@ -90,6 +95,13 @@ See `.env.example` for the full list. The three that matter:
 - `SYNC_TOKEN` — Bearer token guarding `POST /api/sync`. Only relevant if
   you want to trigger syncs over HTTP. The GitHub Actions cron uses
   `TURSO_*` directly and skips this.
+- `STATS_TOKEN` — key for the private dashboard at `/statistik?key=…`.
+- `ANALYTICS_SALT` — secret mixed into the daily visitor hash.
+- `SWISH_NUMBER` — your Swish number for the `/stod` page. Leave unset
+  to hide Swish (Buy Me a Coffee is set in `lib/support.ts`).
+- `RESEND_API_KEY`, `CONTACT_EMAIL` — where the feedback form on `/kontakt`
+  sends messages (via [Resend](https://resend.com)). Sign up to Resend with
+  the same address as `CONTACT_EMAIL`.
 
 ## Triggering sync remotely
 
@@ -123,6 +135,8 @@ automatically. Before clicking Deploy, set environment variables:
 | `TURSO_DATABASE_URL`  | from your Turso dashboard                  |
 | `TURSO_AUTH_TOKEN`    | the R/W token you generated                |
 | `SYNC_TOKEN`          | a random string (`openssl rand -hex 32`)   |
+| `STATS_TOKEN`         | another random string                      |
+| `ANALYTICS_SALT`      | another random string                      |
 
 Click Deploy. First deploy is ~2 min.
 
@@ -143,6 +157,23 @@ site updates automatically.
 In Vercel: Project → Settings → Domains → "Add". Paste `hittagira.se`.
 Vercel shows you the DNS records to add at your registrar. Cert
 provisions automatically once DNS propagates (~1-30 min).
+
+## Visitor statistics
+
+Cookieless and self-hosted: page views and clicks through to ads go into
+the `events` table in Turso. No cookies are set and no IP addresses are
+stored — each visitor is a hash of `ANALYTICS_SALT + date + IP + user
+agent`, which changes every day, so "visitors" means unique visitors per
+day, summed over the period.
+
+- **Dashboard:** `https://<your-host>/statistik?key=<STATS_TOKEN>`.
+  Opening it also stops counting your own visits from that browser.
+- **Tagged links:** `?ref=<name>` (or `utm_source`) on an inbound link
+  shows up under "Varifrån de kommer", e.g.
+  `https://hittagira.se/?ref=blocket-api`. Untagged links are grouped by
+  the referring hostname.
+- Only production builds send beacons, so `npm run dev` against the live
+  database doesn't skew the numbers. Known bots are dropped.
 
 ## Adding a new source
 

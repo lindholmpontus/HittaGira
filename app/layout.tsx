@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Newsreader, Familjen_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { HittaGiraLogo } from "@/components/HittaGiraLogo";
 import { BottomNav } from "@/components/BottomNav";
+import { Analytics } from "@/components/Analytics";
 import "./globals.css";
 
 const familjen = Familjen_Grotesk({
@@ -78,6 +79,7 @@ export default function RootLayout({
               <HeaderLink href="/sok">Sök</HeaderLink>
               <HeaderLink href="/bevakade">Bevakade</HeaderLink>
               <HeaderLink href="/mer">Om</HeaderLink>
+              <HeaderLink href="/stod">Stöd</HeaderLink>
             </nav>
             <div className="ml-auto flex items-center gap-3">
               <Link
@@ -112,7 +114,13 @@ export default function RootLayout({
         <footer className="border-t border-[var(--color-line)] bg-[var(--color-bg)]/60 hidden sm:block">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--color-ink-mute)] sm:px-6">
             <span>© HittaGira · {new Date().getFullYear()}</span>
-            <span>
+            <span className="flex gap-5">
+              <Link
+                href="/kontakt"
+                className="hover:text-[var(--color-ox-500)]"
+              >
+                Kontakt
+              </Link>
               <Link
                 href="/mer"
                 className="hover:text-[var(--color-ox-500)]"
@@ -124,6 +132,7 @@ export default function RootLayout({
         </footer>
 
         <BottomNav />
+        <Analytics />
       </body>
     </html>
   );
