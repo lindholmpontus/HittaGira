@@ -43,12 +43,20 @@ const CoffeeIcon = (
   </svg>
 );
 
+const MailIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="M3 7l9 6 9-6" />
+  </svg>
+);
+
 const tabs: Tab[] = [
   { href: "/", label: "Nytt", icon: HomeIcon },
   { href: "/sok", label: "Sök", icon: SearchIcon },
   { href: "/bevakade", label: "Bevakade", icon: HeartIcon },
   { href: "/mer", label: "Om", icon: BookIcon },
   { href: "/stod", label: "Stöd", icon: CoffeeIcon },
+  { href: "/kontakt", label: "Kontakt", icon: MailIcon },
 ];
 
 function isActive(pathname: string, href: string): boolean {
@@ -64,14 +72,14 @@ export function BottomNav() {
       aria-label="Huvudnavigation"
       className="sm:hidden fixed bottom-0 left-0 right-0 z-30 border-t border-[var(--color-line)] bg-[var(--color-surface)]/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)]"
     >
-      <ul className="grid grid-cols-5">
+      <ul className="grid grid-cols-6">
         {tabs.map((tab) => {
           const active = isActive(pathname, tab.href);
           return (
             <li key={tab.href}>
               <Link
                 href={tab.href}
-                className="relative flex flex-col items-center gap-1 py-2.5 font-mono text-[10px] uppercase tracking-[0.16em]"
+                className="relative flex flex-col items-center gap-1 py-2.5 font-mono text-[10px] uppercase tracking-[0.08em]"
                 aria-current={active ? "page" : undefined}
               >
                 {active && (

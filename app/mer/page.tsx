@@ -69,17 +69,6 @@ export default function MerPage() {
             dig det nyaste först.
           </p>
 
-          <p className="mt-6 text-base text-[var(--color-ink-soft)]">
-            Feedback eller tips?{" "}
-            <Link
-              href="/kontakt"
-              className="text-[var(--color-ox-500)] underline decoration-[var(--color-ox-200)] underline-offset-4 hover:decoration-[var(--color-ox-500)]"
-            >
-              Hör av dig
-            </Link>
-            .
-          </p>
-
           <div className="mt-10 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--color-ink-mute)]">
             <Link
               href="/"

@@ -69,6 +69,7 @@ export default function RootLayout({
               <HeaderLink href="/bevakade">Bevakade</HeaderLink>
               <HeaderLink href="/mer">Om</HeaderLink>
               <HeaderLink href="/stod">Stöd</HeaderLink>
+              <HeaderLink href="/kontakt">Kontakt</HeaderLink>
             </nav>
             <div className="ml-auto flex items-center gap-3">
               <Link
