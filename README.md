@@ -46,7 +46,7 @@ app/                  Next.js routes (App Router)
   sok/                Full-text search
   bevakade/           Watchlist (client-side via localStorage)
   statistik/          Private visitor dashboard, gated by STATS_TOKEN
-  stod/               Donations (Buy Me a Coffee + Swish)
+  stod/               Donations (Buy Me a Coffee)
   kontakt/            Feedback form, emailed via Resend
   api/
     ads/              Lookup ads by ID (used by watchlist)
@@ -97,8 +97,6 @@ See `.env.example` for the full list. The three that matter:
   `TURSO_*` directly and skips this.
 - `STATS_TOKEN` — key for the private dashboard at `/statistik?key=…`.
 - `ANALYTICS_SALT` — secret mixed into the daily visitor hash.
-- `SWISH_NUMBER` — your Swish number for the `/stod` page. Leave unset
-  to hide Swish (Buy Me a Coffee is set in `lib/support.ts`).
 - `RESEND_API_KEY`, `CONTACT_EMAIL` — where the feedback form on `/kontakt`
   sends messages (via [Resend](https://resend.com)). Sign up to Resend with
   the same address as `CONTACT_EMAIL`.

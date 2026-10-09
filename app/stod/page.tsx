@@ -1,23 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SwishButton } from "@/components/SwishButton";
-import {
-  BUY_ME_A_COFFEE_URL,
-  SWISH_NUMBER,
-  swishAppLink,
-  swishQrSvg,
-} from "@/lib/support";
+import { BUY_ME_A_COFFEE_URL } from "@/lib/support";
 
 export const metadata: Metadata = {
   title: "Stöd HittaGira — bjud på en kaffe",
 };
 
-const primaryButton =
-  "inline-flex items-center justify-center gap-2.5 rounded-full border border-[var(--color-ox-700)] bg-[var(--color-ox-500)] px-6 py-3 text-[15px] font-semibold text-[var(--color-gold-100)] shadow-[0_14px_28px_-18px_rgba(122,31,43,0.7)] transition hover:bg-[var(--color-ox-600)] active:scale-[0.98]";
-
-export default async function StodPage() {
-  const qr = SWISH_NUMBER ? await swishQrSvg(SWISH_NUMBER) : null;
-
+export default function StodPage() {
   return (
     <div className="mx-auto max-w-3xl py-6 sm:py-12">
       <div className="flex items-center gap-3 font-mono text-[10.5px] uppercase tracking-[0.22em] text-[var(--color-ink-mute)]">
@@ -43,13 +32,13 @@ export default async function StodPage() {
         ovärderligt.
       </p>
 
-      <div className="mt-10 grid max-w-md gap-3 sm:grid-cols-2">
+      <div className="mt-10">
         <a
           href={BUY_ME_A_COFFEE_URL}
           target="_blank"
           rel="noopener"
           data-support="buymeacoffee"
-          className={primaryButton}
+          className="inline-flex items-center justify-center gap-2.5 rounded-full border border-[var(--color-ox-700)] bg-[var(--color-ox-500)] px-6 py-3 text-[15px] font-semibold text-[var(--color-gold-100)] shadow-[0_14px_28px_-18px_rgba(122,31,43,0.7)] transition hover:bg-[var(--color-ox-600)] active:scale-[0.98]"
         >
           <svg
             width="18"
@@ -70,14 +59,6 @@ export default async function StodPage() {
           </svg>
           Buy Me a Coffee
         </a>
-
-        {SWISH_NUMBER && qr && (
-          <SwishButton
-            appLink={swishAppLink(SWISH_NUMBER)}
-            qrSvg={qr}
-            className={primaryButton}
-          />
-        )}
       </div>
 
       <div className="mt-12 font-mono text-[10.5px] uppercase tracking-[0.18em] text-[var(--color-ink-mute)]">
