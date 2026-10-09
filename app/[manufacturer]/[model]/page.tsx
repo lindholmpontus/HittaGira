@@ -238,7 +238,7 @@ export default async function ModelPage({
       <header className="relative isolate -mx-4 sm:-mx-6">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 grid place-items-center opacity-[0.10] sm:opacity-[0.13]"
+          className="pointer-events-none absolute inset-0 grid content-center place-items-center opacity-[0.10] sm:opacity-[0.13]"
         >
           <ManufacturerLogo
             name={m.name}

@@ -89,7 +89,7 @@ export default async function ManufacturerPage({
         {/* Logo watermark */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 grid place-items-center opacity-[0.10] sm:opacity-[0.13]"
+          className="pointer-events-none absolute inset-0 grid content-center place-items-center opacity-[0.10] sm:opacity-[0.13]"
         >
           <ManufacturerLogo
             name={m.name}
@@ -153,7 +153,7 @@ export default async function ManufacturerPage({
                   <ManufacturerLogo
                     name={m.name}
                     logoFile={m.logoFile}
-                    className="h-2/3 w-2/3 flex items-center justify-center"
+                    className="h-2/3 w-2/3"
                   />
                 </div>
 

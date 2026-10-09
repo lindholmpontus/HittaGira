@@ -183,7 +183,7 @@ export default async function HomePage() {
                   <ManufacturerLogo
                     name={m.name}
                     logoFile={m.logoFile}
-                    className="flex h-12 w-full items-center justify-center sm:h-14"
+                    className="h-12 w-full sm:h-14"
                   />
                 </div>
                 <div className="p-3.5">
