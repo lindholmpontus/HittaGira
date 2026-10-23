@@ -31,7 +31,7 @@ const plex = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "HittaGira — Sveriges begagnade gitarrer, samlade på ett ställe",
   description:
-    "Ett kuraterat register över begagnade gitarrannonser från Blocket och Tradera. Bläddra efter tillverkare, se nytt först.",
+    "Ett kuraterat register över begagnade gitarrannonser från Blocket, Tradera, Gearloop och svenska gitarrbutiker. Bläddra efter tillverkare, se nytt först.",
 };
 
 export const viewport: Viewport = {

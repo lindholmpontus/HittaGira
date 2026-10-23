@@ -1,7 +1,8 @@
 # HittaGira
 
 An independent register of used guitars in Sweden — aggregates listings
-from Blocket, Tradera, Musikbörsen, GuitarGeeks and DLX Music into one
+from Blocket, Tradera, Gearloop, Musikbörsen, GuitarGeeks, DLX Music and
+Halkans into one
 editorial browsing experience.
 
 Stack: Next.js 15 (App Router) · Turso (hosted libSQL/SQLite) · Drizzle
@@ -61,6 +62,8 @@ lib/
   musikborsen.ts      Musikbörsen adapter — WP REST + per-page scrape
   guitargeeks.ts      GuitarGeeks adapter — WooCommerce Store API
   dlxmusic.ts         DLX Music adapter — Litium HTML scrape
+  halkans.ts          Halkans adapter — WordPress HTML scrape
+  gearloop.ts         Gearloop adapter — official REST API (needs a key)
   sync.ts             Orchestrates per-model fetches and DB upserts
   catalog.ts          Seed data: manufacturers, models, search queries
 db/
@@ -97,6 +100,9 @@ See `.env.example` for the full list. The three that matter:
   `TURSO_*` directly and skips this.
 - `STATS_TOKEN` — key for the private dashboard at `/statistik?key=…`.
 - `ANALYTICS_SALT` — secret mixed into the daily visitor hash.
+- `GEARLOOP_API_KEY` — key for the Gearloop API, issued by Gearloop. Without
+  it the sync skips Gearloop. Links back to Gearloop carry
+  `?utm_source=hittagira`, as Gearloop asked.
 - `RESEND_API_KEY`, `CONTACT_EMAIL` — where the feedback form on `/kontakt`
   sends messages (via [Resend](https://resend.com)). Sign up to Resend with
   the same address as `CONTACT_EMAIL`.
@@ -145,6 +151,7 @@ In your GitHub repo: **Settings → Secrets and variables → Actions →
 
 - `TURSO_DATABASE_URL` (same as Vercel)
 - `TURSO_AUTH_TOKEN` (same as Vercel)
+- `GEARLOOP_API_KEY` (the Gearloop key)
 
 The workflow at `.github/workflows/sync.yml` will run every 30 minutes
 and pull fresh listings into Turso. Vercel reads from Turso, so the live

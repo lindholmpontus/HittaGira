@@ -34,4 +34,5 @@ jobs:
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          GEARLOOP_API_KEY: ${{ secrets.GEARLOOP_API_KEY }}
         run: npm run sync

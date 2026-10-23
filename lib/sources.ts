@@ -4,7 +4,8 @@ export type SourceId =
   | "musikborsen"
   | "guitargeeks"
   | "dlxmusic"
-  | "halkans";
+  | "halkans"
+  | "gearloop";
 
 export type SourceMeta = {
   id: SourceId;
@@ -61,6 +62,12 @@ export const SOURCES: Record<SourceId, SourceMeta> = {
     color: "#9C6B3F",
     kind: "shop",
     blocketOrgPatterns: ["halkans"],
+  },
+  gearloop: {
+    id: "gearloop",
+    label: "Gearloop",
+    color: "#6E7B2C",
+    kind: "marketplace",
   },
 };
 

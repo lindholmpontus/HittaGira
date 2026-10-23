@@ -62,7 +62,9 @@ export default function MerPage() {
             <span className="string-underline text-[var(--color-coral-600)]">
               Tradera
             </span>
-            , <span className="string-underline">Musikbörsen</span>,{" "}
+            ,{" "}
+            <span className="string-underline">Gearloop</span>,{" "}
+            <span className="string-underline">Musikbörsen</span>,{" "}
             <span className="string-underline">GuitarGeeks</span>,{" "}
             <span className="string-underline">DLX Music</span> och{" "}
             <span className="string-underline">Halkans</span> — och visar

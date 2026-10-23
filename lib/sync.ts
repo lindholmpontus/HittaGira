@@ -6,6 +6,7 @@ import { musikborsenAdapter } from "@/lib/musikborsen";
 import { guitargeeksAdapter } from "@/lib/guitargeeks";
 import { dlxmusicAdapter } from "@/lib/dlxmusic";
 import { halkansAdapter } from "@/lib/halkans";
+import { gearloopAdapter } from "@/lib/gearloop";
 import {
   SOURCE_IDS,
   type Adapter,
@@ -20,6 +21,7 @@ const ADAPTERS: Adapter[] = [
   guitargeeksAdapter,
   dlxmusicAdapter,
   halkansAdapter,
+  gearloopAdapter,
 ];
 
 type SyncStats = {
