@@ -97,29 +97,55 @@ function expandImageUrl(template: string | null | undefined): string | null {
   return template.replace("{format}", "medium");
 }
 
-function extractNextData(html: string): unknown {
-  const match = html.match(
-    /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/,
-  );
-  if (!match) throw new Error("Tradera: __NEXT_DATA__ not found in HTML");
-  return JSON.parse(match[1]);
+// Tradera's search page moved to the Next.js App Router (June 2026), which
+// dropped `__NEXT_DATA__`. The results now ride in the RSC flight payload —
+// `self.__next_f.push([1,"…"])` string chunks — as a Redux action:
+//   {"type":"discover/receiveSearchResults","payload":{"result":{items,…}}}
+const RESULTS_MARKER = '"type":"discover/receiveSearchResults","payload":';
+
+/** Returns the JSON value (object/array) that starts at `start` in `s`. */
+function sliceJsonValue(s: string, start: number): string {
+  let depth = 0;
+  let inString = false;
+  for (let i = start; i < s.length; i++) {
+    const ch = s[i];
+    if (inString) {
+      if (ch === "\\") i++;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    else if (ch === "{" || ch === "[") depth++;
+    else if (ch === "}" || ch === "]") {
+      depth--;
+      if (depth === 0) return s.slice(start, i + 1);
+    }
+  }
+  throw new Error("Tradera: unterminated search payload");
 }
 
-const NextData = z.object({
-  props: z.object({
-    pageProps: z.object({
-      initialState: z.object({
-        discover: z.object({
-          items: z.array(TraderaItem.passthrough()),
-          pagination: z
-            .object({
-              pageIndex: z.number().nullish(),
-              pageCount: z.number().nullish(),
-            })
-            .nullish(),
-        }),
-      }),
-    }),
+function extractSearchPayload(html: string): unknown {
+  const flight = [
+    ...html.matchAll(
+      /self\.__next_f\.push\(\[1,("[^"\\]*(?:\\.[^"\\]*)*")\]\)/g,
+    ),
+  ]
+    .map((m) => JSON.parse(m[1]) as string)
+    .join("");
+  const at = flight.indexOf(RESULTS_MARKER);
+  if (at === -1) throw new Error("Tradera: search results not found in HTML");
+  return JSON.parse(sliceJsonValue(flight, at + RESULTS_MARKER.length));
+}
+
+const SearchPayload = z.object({
+  result: z.object({
+    items: z.array(TraderaItem.passthrough()),
+    pagination: z
+      .object({
+        pageIndex: z.number().nullish(),
+        pageCount: z.number().nullish(),
+      })
+      .nullish(),
   }),
 });
 
@@ -143,8 +169,7 @@ async function fetchPage(query: string, page: number) {
     throw new Error(`Tradera ${res.status} for ${url}`);
   }
   const html = await res.text();
-  const data = NextData.parse(extractNextData(html));
-  return data.props.pageProps.initialState.discover;
+  return SearchPayload.parse(extractSearchPayload(html)).result;
 }
 
 function normalize(item: z.infer<typeof TraderaItem>): NormalizedAd {
@@ -192,18 +217,18 @@ export const traderaAdapter: Adapter = {
   async *search(query: string, maxPages = 5) {
     let page = 1;
     while (page <= maxPages) {
-      let discover;
+      let result;
       try {
-        discover = await fetchPage(query, page);
+        result = await fetchPage(query, page);
       } catch (err) {
         console.error(`[tradera] page ${page} for "${query}" failed:`, err);
         return;
       }
-      const relevant = discover.items.filter((it) =>
+      const relevant = result.items.filter((it) =>
         passesRelevance(it.shortDescription, query),
       );
       yield relevant.map(normalize);
-      const last = discover.pagination?.pageCount ?? 1;
+      const last = result.pagination?.pageCount ?? 1;
       if (page >= last) break;
       page += 1;
     }
