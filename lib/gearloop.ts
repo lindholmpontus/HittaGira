@@ -147,7 +147,15 @@ function passesRelevance(heading: string, query: string): boolean {
     .split(/\s+/)
     .map((w) => w.replace(/[^\p{L}\p{N}-]/gu, ""))
     .filter((w) => w.length >= 2);
-  return words.every((w) => h.includes(w));
+  // Sellers write model numbers loosely ("HD 28", "D28"), so a hyphen inside a
+  // query word matches a hyphen, a space or nothing. A trailing hyphen
+  // ("LTD M-") stays literal. Words are only letters, digits and hyphens
+  // here, so they're safe to use as a pattern.
+  return words.every((w) =>
+    new RegExp(
+      w.replace(/(?<=[\p{L}\p{N}])-(?=[\p{L}\p{N}])/gu, "[-\\s]?"),
+    ).test(h),
+  );
 }
 
 function withUtm(url: string): string {
