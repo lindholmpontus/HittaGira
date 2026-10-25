@@ -24,6 +24,10 @@ const ADAPTERS: Adapter[] = [
   gearloopAdapter,
 ];
 
+// Ads not seen by any sync for this long are hidden, even if their source
+// failed silently. Well above the sync interval so one bad run hides nothing.
+const STALE_AFTER_MS = 24 * 60 * 60 * 1000;
+
 type SyncStats = {
   modelsProcessed: number;
   adsUpserted: number;
@@ -217,6 +221,22 @@ export async function runSync(modelIds?: number[]): Promise<SyncStats> {
         await new Promise((r) => setTimeout(r, 250));
       }
       stats.modelsProcessed += 1;
+    }
+
+    // Adapters swallow their own errors and yield nothing, so a source that
+    // is down looks the same as an empty search and the per-model sweep in
+    // syncModelForSource never fires. Anything no source has confirmed
+    // recently is treated as gone; it comes back if a later sync sees it.
+    if (!modelIds) {
+      const stale = await db.run(sql`
+        UPDATE ads
+        SET removed_at = (unixepoch() * 1000)
+        WHERE removed_at IS NULL
+          AND last_seen_at < (unixepoch() * 1000) - ${STALE_AFTER_MS}
+      `);
+      if (stale.rowsAffected > 0) {
+        console.warn(`[sync] marked ${stale.rowsAffected} stale ads as removed`);
+      }
     }
 
     await db
