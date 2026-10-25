@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { matchesQuery } from "./relevance";
 import type { Adapter, NormalizedAd } from "./sources";
 
 const BASE = "https://www.tradera.com";
@@ -65,13 +66,7 @@ function passesRelevance(heading: string, query: string): boolean {
   const h = heading.toLowerCase();
   // Reject if any accessory keyword appears
   if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  // Require every query word (>=2 chars) appears in heading
-  const words = query
-    .toLowerCase()
-    .split(/\s+/)
-    .map((w) => w.replace(/[^\p{L}\p{N}-]/gu, ""))
-    .filter((w) => w.length >= 2);
-  return words.every((w) => h.includes(w));
+  return matchesQuery(h, query);
 }
 
 const TraderaItem = z.object({

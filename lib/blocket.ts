@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { matchesQuery } from "./relevance";
 import { isDirectlyIndexedShop, type Adapter, type NormalizedAd } from "./sources";
 
 const BASE = process.env.BLOCKET_API_BASE ?? "https://blocket-api.se";
@@ -76,12 +77,7 @@ const NEGATIVE_KEYWORDS = [
 function passesRelevance(heading: string, query: string): boolean {
   const h = heading.toLowerCase();
   if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  const words = query
-    .toLowerCase()
-    .split(/\s+/)
-    .map((w) => w.replace(/[^\p{L}\p{N}-]/gu, ""))
-    .filter((w) => w.length >= 2);
-  return words.every((w) => h.includes(w));
+  return matchesQuery(h, query);
 }
 
 const BlocketDoc = z.object({

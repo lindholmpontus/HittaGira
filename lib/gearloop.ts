@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { getPlace } from "./places";
+import { matchesQuery } from "./relevance";
 import type { Adapter, NormalizedAd } from "./sources";
 
 // Gearloop (gearloop.se) — Swedish marketplace for music gear. Official
@@ -144,20 +145,7 @@ async function getAllListings(apiKey: string): Promise<Listing[]> {
 function passesRelevance(heading: string, query: string): boolean {
   const h = heading.toLowerCase();
   if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  const words = query
-    .toLowerCase()
-    .split(/\s+/)
-    .map((w) => w.replace(/[^\p{L}\p{N}-]/gu, ""))
-    .filter((w) => w.length >= 2);
-  // Sellers write model numbers loosely ("HD 28", "D28"), so a hyphen inside a
-  // query word matches a hyphen, a space or nothing. A trailing hyphen
-  // ("LTD M-") stays literal. Words are only letters, digits and hyphens
-  // here, so they're safe to use as a pattern.
-  return words.every((w) =>
-    new RegExp(
-      w.replace(/(?<=[\p{L}\p{N}])-(?=[\p{L}\p{N}])/gu, "[-\\s]?"),
-    ).test(h),
-  );
+  return matchesQuery(h, query);
 }
 
 function withUtm(url: string): string {

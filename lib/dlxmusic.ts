@@ -1,3 +1,4 @@
+import { matchesQuery } from "./relevance";
 import type { Adapter, NormalizedAd } from "./sources";
 
 const BASE = "https://www.dlxmusic.se";
@@ -165,12 +166,7 @@ async function getAllProducts(): Promise<ParsedProduct[]> {
 function passesRelevance(heading: string, query: string): boolean {
   const h = heading.toLowerCase();
   if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  const words = query
-    .toLowerCase()
-    .split(/\s+/)
-    .map((w) => w.replace(/[^\p{L}\p{N}-]/gu, ""))
-    .filter((w) => w.length >= 2);
-  return words.every((w) => h.includes(w));
+  return matchesQuery(h, query);
 }
 
 function toNormalizedAd(p: ParsedProduct): NormalizedAd {

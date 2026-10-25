@@ -1,3 +1,4 @@
+import { matchesQuery } from "./relevance";
 import type { Adapter, NormalizedAd } from "./sources";
 
 // Halkans Rockhouse (Stockholm) lists its whole used stock on two long
@@ -181,12 +182,7 @@ async function getAllProducts(): Promise<HalkansProduct[]> {
 function passesRelevance(heading: string, query: string): boolean {
   const h = heading.toLowerCase();
   if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  const words = query
-    .toLowerCase()
-    .split(/\s+/)
-    .map((w) => w.replace(/[^\p{L}\p{N}-]/gu, ""))
-    .filter((w) => w.length >= 2);
-  return words.every((w) => h.includes(w));
+  return matchesQuery(h, query);
 }
 
 function toNormalizedAd(p: HalkansProduct): NormalizedAd {
