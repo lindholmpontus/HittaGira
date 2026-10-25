@@ -5,7 +5,9 @@ import type { Adapter, NormalizedAd } from "./sources";
 // Gearloop (gearloop.se) — Swedish marketplace for music gear. Official
 // read-only REST API, key issued by Gearloop (Bearer `gearloop_…`).
 // Spec: https://api.gearloop.se/v1/openapi.json
-const BASE = "https://gearloop.se/api/v1";
+// gearloop.se/api/v1 serves the same API, but Cloudflare's bot check there
+// blocks GitHub Actions runners (403 "Just a moment...").
+const BASE = "https://api.gearloop.se/v1";
 
 // Gearloop's categories are flat: 4 = Elgitarrer, 1 = Akustiska gitarrer.
 // Semi-acoustics and 12-strings are listed under one of these two.
@@ -98,7 +100,7 @@ async function fetchPage(
       headers: {
         authorization: `Bearer ${apiKey}`,
         accept: "application/json",
-        "user-agent": "Mozilla/5.0 (compatible; HittaGira/0.1; +https://hittagira.se)",
+        "user-agent": "HittaGira/0.1 (+https://hittagira.se)",
       },
       cache: "no-store",
     });
