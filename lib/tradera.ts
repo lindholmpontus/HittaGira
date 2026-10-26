@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { matchesQuery } from "./relevance";
+import { passesRelevance } from "./relevance";
 import type { Adapter, NormalizedAd } from "./sources";
 
 const BASE = "https://www.tradera.com";
@@ -8,66 +8,6 @@ const BASE = "https://www.tradera.com";
 //   21 Musik > 2104 Musikinstrument > 210405 Gitarr & bas
 // Filtering to 210405 excludes accessories, picks, magazines, video games etc.
 const GUITAR_CATEGORY = "210405";
-
-// Headings containing any of these (case-insensitive) are accessories, not guitars.
-const NEGATIVE_KEYWORDS = [
-  "gigbag",
-  "fodral",
-  "väska",
-  "vaska",
-  "strap",
-  " rem ",
-  "pickguard",
-  "plektrumskydd",
-  "plekt",
-  "mikrofon",
-  "stämapparat",
-  "tuner",
-  "kapodaster",
-  "kapo",
-  "stränguppsättning",
-  "strängar",
-  "strings ",
-  "knappar",
-  "pickup",
-  "humbucker",
-  "single coil",
-  "förstärkare",
-  "amp ",
-  "kabel",
-  "stativ",
-  "stand",
-  "verktyg",
-  "bok ",
-  "böcker",
-  "skola",
-  "noter",
-  // spare parts & decals — Tradera is full of these; titles still name the model
-  "vattendekal",
-  "dekal",
-  "decal",
-  "sticker",
-  "klistermärke",
-  "fjäder",
-  "fjädrar",
-  "svajfjäder",
-  "stallfjäder",
-  "switch tip",
-  "switchknapp",
-  "rattar",
-  "knappar",
-  "knobs",
-  "repro",
-  "replacement",
-  " diy ",
-];
-
-function passesRelevance(heading: string, query: string): boolean {
-  const h = heading.toLowerCase();
-  // Reject if any accessory keyword appears
-  if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  return matchesQuery(h, query);
-}
 
 const TraderaItem = z.object({
   itemId: z.number(),

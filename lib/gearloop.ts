@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { getPlace } from "./places";
-import { matchesQuery } from "./relevance";
+import { passesRelevance } from "./relevance";
 import type { Adapter, NormalizedAd } from "./sources";
 
 // Gearloop (gearloop.se) — Swedish marketplace for music gear. Official
@@ -24,29 +24,6 @@ let cache: { at: number; items: Listing[] } | null = null;
 
 // Gearloop asked for this on every link back to them.
 const UTM_SOURCE = "hittagira";
-
-const NEGATIVE_KEYWORDS = [
-  "gigbag",
-  "fodral",
-  "väska",
-  "vaska",
-  "pickguard",
-  "kapodaster",
-  "kapo",
-  "strängar",
-  "pickup",
-  "humbucker",
-  "förstärkare",
-  " amp ",
-  "pedal",
-  "tuner",
-  "stativ",
-  "stand",
-  "kabel",
-  "noter",
-  "köpes",
-  "sökes",
-];
 
 const Image = z.object({ url: z.string() });
 
@@ -140,12 +117,6 @@ async function getAllListings(apiKey: string): Promise<Listing[]> {
   }
   cache = { at: now, items: all };
   return all;
-}
-
-function passesRelevance(heading: string, query: string): boolean {
-  const h = heading.toLowerCase();
-  if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  return matchesQuery(h, query);
 }
 
 function withUtm(url: string): string {

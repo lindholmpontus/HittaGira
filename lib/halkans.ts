@@ -1,4 +1,4 @@
-import { matchesQuery } from "./relevance";
+import { passesRelevance } from "./relevance";
 import type { Adapter, NormalizedAd } from "./sources";
 
 // Halkans Rockhouse (Stockholm) lists its whole used stock on two long
@@ -12,27 +12,6 @@ const CATEGORIES = [
 
 const CACHE_TTL_MS = 30 * 60 * 1000;
 let cache: { at: number; items: HalkansProduct[] } | null = null;
-
-const NEGATIVE_KEYWORDS = [
-  "gigbag",
-  "fodral",
-  "väska",
-  "vaska",
-  "pickguard",
-  "kapodaster",
-  "kapo",
-  "strängar",
-  "pickup",
-  "humbucker",
-  "förstärkare",
-  " amp ",
-  "pedal",
-  "tuner",
-  "stativ",
-  "stand",
-  "kabel",
-  "noter",
-];
 
 type HalkansProduct = {
   id: string;
@@ -177,12 +156,6 @@ async function getAllProducts(): Promise<HalkansProduct[]> {
   const all = [...byId.values()];
   cache = { at: now, items: all };
   return all;
-}
-
-function passesRelevance(heading: string, query: string): boolean {
-  const h = heading.toLowerCase();
-  if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  return matchesQuery(h, query);
 }
 
 function toNormalizedAd(p: HalkansProduct): NormalizedAd {

@@ -1,4 +1,4 @@
-import { matchesQuery } from "./relevance";
+import { passesRelevance } from "./relevance";
 import type { Adapter, NormalizedAd } from "./sources";
 
 const BASE = "https://www.dlxmusic.se";
@@ -9,41 +9,6 @@ const MAX_PAGES = 8;
 // `search()` once per model — without this we'd re-fetch 5 pages × 64 models.
 const CACHE_TTL_MS = 30 * 60 * 1000;
 let cache: { at: number; items: ParsedProduct[] } | null = null;
-
-const NEGATIVE_KEYWORDS = [
-  "saxofon",
-  "trumpet",
-  "trombon",
-  "klarinett",
-  "flöjt",
-  "fiol",
-  "violin",
-  "cello",
-  "piano",
-  "keyboard",
-  "synth",
-  "trumma",
-  "trummset",
-  "cymbal",
-  "gigbag",
-  "fodral",
-  "väska",
-  "vaska",
-  "pickguard",
-  "kapodaster",
-  "kapo",
-  "strängar",
-  "pickup",
-  "humbucker",
-  "förstärkare",
-  " amp ",
-  "pedal",
-  "tuner",
-  "stativ",
-  "stand",
-  "kabel",
-  "noter",
-];
 
 type ParsedProduct = {
   articleNumber: string;
@@ -161,12 +126,6 @@ async function getAllProducts(): Promise<ParsedProduct[]> {
   }
   cache = { at: now, items: all };
   return all;
-}
-
-function passesRelevance(heading: string, query: string): boolean {
-  const h = heading.toLowerCase();
-  if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  return matchesQuery(h, query);
 }
 
 function toNormalizedAd(p: ParsedProduct): NormalizedAd {

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { matchesQuery } from "./relevance";
+import { passesRelevance } from "./relevance";
 import { isDirectlyIndexedShop, type Adapter, type NormalizedAd } from "./sources";
 
 const BASE = process.env.BLOCKET_API_BASE ?? "https://blocket-api.se";
@@ -7,78 +7,6 @@ const BASE = process.env.BLOCKET_API_BASE ?? "https://blocket-api.se";
 // Blocket category for "Leisure, hobby & entertainment" — covers musical instruments.
 // Filtering here eliminates Aston Martin cars, La Martina clothing, Chris Martin furniture, etc.
 const HOBBY_CATEGORY = "FRITID_HOBBY_OCH_UNDERHALLNING";
-
-// Heading must NOT contain these — they indicate the item is NOT a guitar.
-const NEGATIVE_KEYWORDS = [
-  "saxofon",
-  "saxophone",
-  "trumpet",
-  "trombon",
-  "kornett",
-  "klarinett",
-  "flöjt",
-  "fiol",
-  "violin",
-  "cello",
-  "piano",
-  "keyboard",
-  "synth",
-  "trumma",
-  "trummset",
-  "cymbal",
-  "gigbag",
-  "fodral",
-  "väska",
-  "vaska",
-  "pickguard",
-  "plektrumskydd",
-  "plekt",
-  "kapodaster",
-  "kapo",
-  "strängar",
-  "strings",
-  "pickup",
-  "förstärkare",
-  "amp ",
-  "pedal",
-  "switch",
-  "octa-switch",
-  "tuner",
-  "stativ",
-  "stand",
-  "kabel",
-  "noter",
-  "skola",
-  "bok ",
-  "böcker",
-  // spare parts & decals — these slip in because the heading still names the model
-  "vattendekal",
-  "dekal",
-  "decal",
-  "sticker",
-  "klistermärke",
-  "fjäder",
-  "fjädrar",
-  "svajfjäder",
-  "stallfjäder",
-  "switch tip",
-  "switchknapp",
-  "rattar",
-  "knappar",
-  "knobs",
-  "repro",
-  "replacement",
-  " diy ",
-  "aston martin",
-  "la martina",
-  "carl martin",
-];
-
-function passesRelevance(heading: string, query: string): boolean {
-  const h = heading.toLowerCase();
-  if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  return matchesQuery(h, query);
-}
 
 const BlocketDoc = z.object({
   ad_id: z.number(),

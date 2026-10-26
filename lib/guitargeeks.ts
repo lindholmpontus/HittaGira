@@ -1,50 +1,8 @@
 import { z } from "zod";
-import { matchesQuery } from "./relevance";
+import { passesRelevance } from "./relevance";
 import type { Adapter, NormalizedAd } from "./sources";
 
 const BASE = "https://guitargeeks.se";
-
-// Headings containing any of these are accessories or non-guitars.
-const NEGATIVE_KEYWORDS = [
-  "saxofon",
-  "trumpet",
-  "trombon",
-  "klarinett",
-  "flöjt",
-  "fiol",
-  "violin",
-  "cello",
-  "piano",
-  "keyboard",
-  "synth",
-  "trumma",
-  "trummset",
-  "cymbal",
-  "gigbag",
-  "fodral",
-  "väska",
-  "vaska",
-  "pickguard",
-  "kapodaster",
-  "kapo",
-  "strängar",
-  "pickup",
-  "humbucker",
-  "förstärkare",
-  " amp ",
-  "pedal",
-  "tuner",
-  "stativ",
-  "stand",
-  "kabel",
-  "noter",
-];
-
-function passesRelevance(heading: string, query: string): boolean {
-  const h = heading.toLowerCase();
-  if (NEGATIVE_KEYWORDS.some((k) => h.includes(k))) return false;
-  return matchesQuery(h, query);
-}
 
 const ProductImage = z.object({
   src: z.string().url(),
